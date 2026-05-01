@@ -1,58 +1,92 @@
 # Reddit AI Bot
 
-Autonomous AI bot that connects local Ollama models to Reddit API. It browses subreddits, reads conversations, replies to comments, and creates new threads 24/7.
+A minimal AI-powered Reddit bot that can browse subreddits, reply to conversations, and create new threads 24/7 using local models.
 
-## Requirements
+## Features
 
-- Python 3.8+
-- [Ollama](https://ollama.ai) running locally
-- Reddit API credentials
+- **Dual Backend Support**: Use either Ollama or llama.cpp for inference
+- **Autonomous Operation**: Browses subs, analyzes content, and decides actions intelligently
+- **Auto-reply**: Generates contextual replies to posts and comments
+- **Thread Creation**: Creates new discussion threads based on AI inspiration
+- **Minimal Setup**: Simple configuration, runs continuously
 
-## Setup
+## Model Backends
 
-1. Install dependencies:
+### Option 1: Ollama (Default)
+```bash
+# Install Ollama
+curl -fsSL https://ollama.com/install.sh | sh
+
+# Pull a model
+ollama pull llama3.2
+
+# Start Ollama server
+ollama serve
+```
+
+### Option 2: llama.cpp (HuggingFace models)
+```bash
+# Clone and build llama.cpp
+git clone https://github.com/ggerganov/llama.cpp
+cd llama.cpp && make
+
+# Models are auto-downloaded from HuggingFace on first run
+# Or specify your own .gguf model path in config.py
+```
+
+## Installation
+
 ```bash
 pip install -r requirements.txt
 ```
 
-2. Start Ollama (in a separate terminal):
-```bash
-ollama serve
+## Configuration
+
+Edit `config.py`:
+
+```python
+# Choose backend: "ollama" or "llama_cpp"
+MODEL_BACKEND = "ollama"  # or "llama_cpp"
+
+# Reddit credentials (required)
+REDDIT_CONFIG = {
+    "client_id": "YOUR_CLIENT_ID",
+    "client_secret": "YOUR_CLIENT_SECRET",
+    "user_agent": "reddit-ai-bot/1.0",
+    "username": "YOUR_USERNAME",
+    "password": "YOUR_PASSWORD"
+}
+
+# Subreddits to monitor
+SUBREDDITS = ["technology", "programming", "artificial"]
 ```
 
-3. Pull a model:
-```bash
-ollama pull llama3.2
-```
+## Usage
 
-4. Configure `config.py` with your Reddit credentials:
-   - Get credentials at https://www.reddit.com/prefs/apps
-   - Create a "script" app type
-   - Update REDDIT_CONFIG in config.py
-
-5. Run the bot:
 ```bash
 python bot.py
 ```
 
+The bot will:
+1. Connect to your chosen model backend
+2. Monitor configured subreddits
+3. Analyze posts and comments with AI
+4. Decide whether to reply, create posts, or skip
+5. Run continuously (24/7)
+
 ## Files
 
-- `config.py` - Configuration for Reddit and Ollama
-- `ollama_client.py` - Local LLM interface
+- `bot.py` - Main bot logic
+- `config.py` - Configuration settings
+- `model_factory.py` - Backend selector (Ollama vs llama.cpp)
+- `ollama_client.py` - Ollama API client
+- `llama_cpp_client.py` - llama.cpp client with HF auto-download
 - `reddit_client.py` - Reddit API wrapper
-- `bot.py` - Main bot logic with autonomous decision making
+- `requirements.txt` - Python dependencies
 
-## How It Works
+## Notes
 
-1. Monitors configured subreddits every 5 minutes
-2. AI analyzes posts and comments to decide actions
-3. Generates contextual replies using local Ollama model
-4. Creates new discussion threads autonomously
-5. Runs continuously without manual intervention
-
-## Customization
-
-Edit `config.py` to:
-- Change monitored subreddits
-- Adjust check interval
-- Use different Ollama model
+- For llama.cpp: Ensure `./main` binary exists in the repo root or update the path
+- GGUF models are automatically downloaded from HuggingFace if not specified
+- Adjust `CHECK_INTERVAL` in config to control how often the bot checks for new content
+- The bot tracks processed items to avoid duplicate actions
