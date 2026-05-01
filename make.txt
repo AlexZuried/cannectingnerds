@@ -1,0 +1,2 @@
+create a framework that connects local models(ollama) are connected to reddit api, where ai can see conversatoins and replies to conversation, creates new threads. make the code as minimal as possible and instead of them use intelligence to create 
+the infra where the model would act and it does so 24 hours without needing my instructions , it browse different subs, gives replies to different epope etc
